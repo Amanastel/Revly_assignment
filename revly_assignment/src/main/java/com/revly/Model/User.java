@@ -22,9 +22,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType;
     @Enumerated(EnumType.STRING)
-    private Subjects userLanguage;
+    private Subjects userLanguage; // for student
     @Enumerated(EnumType.STRING)
-    private Subjects subjectExpertise;
+    private Subjects subjectExpertise; // for tutor
     private String classGrade;
     @NotNull(message = "Name cannot be null")
     @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters")
