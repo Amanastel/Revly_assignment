@@ -1,9 +1,6 @@
 package com.revly.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +15,18 @@ import java.time.LocalDateTime;
 @Setter
 public class DoubtRequest {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer studentId;
-    private Integer tutorId;
-    private String doubtSubject;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id")
+    private User student;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tutor_id")
+    private User tutor;
+    @Enumerated(EnumType.STRING)
+    private Subjects doubtSubject;
     private LocalDateTime timestamp;
-    private String description;
+    private String doubtDescription;
     @Enumerated(EnumType.STRING)
     private DoubtResolved doubtResolved;
 

@@ -1,0 +1,28 @@
+package com.revly.Model;
+
+public enum Subjects {
+    MATHS,
+    SCIENCE,
+    ENGLISH,
+    SOCIAL_SCIENCE,
+    COMPUTER_SCIENCE,
+    PHYSICS,
+    CHEMISTRY,
+    BIOLOGY,
+    ACCOUNTANCY,
+    BUSINESS_STUDIES,
+    ECONOMICS,
+    HISTORY,
+    GEOGRAPHY,
+    POLITICAL_SCIENCE,
+    PSYCHOLOGY,
+    SOCIOLOGY,
+    PHILOSOPHY,
+    HOME_SCIENCE,
+    FINE_ARTS,
+    MUSIC,
+    DANCE,
+    PHYSICAL_EDUCATION,
+    YOGA,
+    OTHERS
+}

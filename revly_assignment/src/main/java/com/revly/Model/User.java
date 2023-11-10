@@ -15,15 +15,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Enumerated(EnumType.STRING)
     private UserType userType;
-//    private String userLanguage;
-//    private String subjectExpertise;
-//    private String classGrade;
+    @Enumerated(EnumType.STRING)
+    private Subjects userLanguage;
+    @Enumerated(EnumType.STRING)
+    private Subjects subjectExpertise;
+    private String classGrade;
     @NotNull(message = "Name cannot be null")
     @Size(min = 3, max = 30, message = "Name must be between 3 and 30 characters")
     private String name;
