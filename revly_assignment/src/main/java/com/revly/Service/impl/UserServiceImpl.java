@@ -1,7 +1,7 @@
 package com.revly.Service.impl;
 
 import com.revly.Exception.UserException;
-import com.revly.Model.User;
+import com.revly.Model.Users;
 import com.revly.Model.UserType;
 import com.revly.Repository.UserRepository;
 import com.revly.Service.UserService;
@@ -23,14 +23,14 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional
-    public User registerUser(User user) {
+    public Users registerUser(Users user) {
         user.setRegistrationDate(LocalDateTime.now());
         return userRepository.save(user);
     }
 
     @Override
-    public User registerOnlyTutor(User user) {
-        if(user.getUserType().equals(UserType.TUTOR)){
+    public Users registerOnlyTutor(Users user) {
+        if(user.getUserType().equalsIgnoreCase("ROLE_TUTOR")){
             return userRepository.save(user);
         }else{
             throw new UserException("Only tutor can register");
@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerOnlyStudent(User user) {
-        if(user.getUserType().equals(UserType.STUDENT)){
+    public Users registerOnlyStudent(Users user) {
+        if(user.getUserType().equalsIgnoreCase("ROLE_STUDENT")){
             return userRepository.save(user);
         }else {
             throw new UserException("Only student can register");
@@ -47,14 +47,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public Users getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserException("User not found"));
     }
 
     @Override
-    public List<User> getAllUsers() {
-        List<User> users = userRepository.findAll();
+    public List<Users> getAllUsers() {
+        List<Users> users = userRepository.findAll();
         if(users.isEmpty()){
             throw new UserException("No users found");
         }else{
@@ -63,10 +63,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllTutors() {
-        List<User> tutors = userRepository.findAll();
+    public List<Users> getAllTutors() {
+        List<Users> tutors = userRepository.findAll();
         if(!tutors.isEmpty()){
-            List<User> tutorsList = userRepository.findByUserType(UserType.TUTOR);
+            List<Users> tutorsList = userRepository.findByUserType("ROLE_TUTOR");
 
             if (tutorsList.isEmpty()) {
                 throw new UserException("No tutors found");
@@ -80,10 +80,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllStudents() {
-        List<User> students = userRepository.findAll();
+    public List<Users> getAllStudents() {
+        List<Users> students = userRepository.findAll();
         if(!students.isEmpty()){
-            List<User> studentsList = userRepository.findByUserType(UserType.STUDENT);
+            List<Users> studentsList = userRepository.findByUserType("ROLE_STUDENT");
             if (studentsList.isEmpty()) {
                 throw new UserException("No students found");
             } else {

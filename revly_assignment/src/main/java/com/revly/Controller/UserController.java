@@ -1,25 +1,34 @@
 package com.revly.Controller;
 
-import com.revly.Model.User;
+import com.revly.Model.Users;
+import com.revly.Service.TutorAvailabilityService;
 import com.revly.Service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Slf4j
+//@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    public final TutorAvailabilityService tutorAvailabilityService;
+
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TutorAvailabilityService tutorAvailabilityService) {
         this.userService = userService;
+        this.tutorAvailabilityService = tutorAvailabilityService;
     }
+
+
 
 
     /*
@@ -32,10 +41,10 @@ public class UserController {
           "userType": "STUDENT",
           "userLanguage": "ENGLISH",
           "classGrade": "10",
-          "name": "John Doe",
-          "email": "john.doe@student.com",
+          "name": "Aman Kumar",
+          "email": "aman@student.com",
           "password": "aman1234",
-          "address": "123 Main Street, Cityville",
+          "address": "123 Main Street, Kanpur",
 
         }
 
@@ -44,42 +53,61 @@ public class UserController {
             {
           "userType": "TUTOR",
           "subjectExpertise": "MATHS",
-          "name": "Jane Tutor",
-          "email": "jane.tutor@tutor.com",
+          "name": "Rahul Kumar",
+          "email": "rahul.tutor@tutor.com",
           "password": "aman1234",
           "address": "456 Oak Avenue, Townsville",
 
         }
      */
 
-    @PostMapping("user/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @PostMapping("/users/register")
+    public ResponseEntity<Users> registerUser(@RequestBody Users user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserType("ROLE_"+user.getUserType().toUpperCase());
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
-    @PostMapping("user/registerOnlyTutor")
-    public ResponseEntity<User> registerOnlyTutor(@RequestBody User user) {
+    @PostMapping("/users/registerOnlyTutor")
+    public ResponseEntity<Users> registerOnlyTutor(@RequestBody Users user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserType("ROLE_"+user.getUserType().toUpperCase());
         return ResponseEntity.ok(userService.registerOnlyTutor(user));
     }
 
-    @PostMapping("user/registerOnlyStudent")
-    public ResponseEntity<User> registerOnlyStudent(@RequestBody User user) {
+    @PostMapping("/users/registerOnlyStudent")
+    public ResponseEntity<Users> registerOnlyStudent(@RequestBody Users user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserType("ROLE_"+user.getUserType().toUpperCase());
         return ResponseEntity.ok(userService.registerOnlyStudent(user));
     }
 
-    @GetMapping("user/getAllUsers")
-    public ResponseEntity<List<User>> getAllUsers() {
+    @GetMapping("/users/getAllUsers")
+    public ResponseEntity<List<Users>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("user/getAllTutors")
-    public ResponseEntity<List<User>> getAllTutors() {
+    @GetMapping("/users/getAllTutors")
+    public ResponseEntity<List<Users>> getAllTutors() {
         return ResponseEntity.ok(userService.getAllTutors());
     }
 
-    @GetMapping("user/getAllStudents")
-    public ResponseEntity<List<User>> getAllStudents() {
+    @GetMapping("users/getAllStudents")
+    public ResponseEntity<List<Users>> getAllStudents() {
         return ResponseEntity.ok(userService.getAllStudents());
+    }
+
+    @GetMapping("/signIn")
+    public ResponseEntity<String > getLoggedInCustomerDetailsHandler(Authentication auth) {
+        Users users = userService.getUserByEmail(auth.getName());
+        log.info("User: {}", auth.getName());
+        if(users.getUserType().equalsIgnoreCase("ROLE_TUTOR")){
+            tutorAvailabilityService.addTutorAvailability(users.getEmail());
+        }
+        return new ResponseEntity<>("User: "+auth.getName(), HttpStatus.ACCEPTED);
     }
 
 }

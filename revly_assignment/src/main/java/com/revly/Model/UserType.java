@@ -1,6 +1,6 @@
 package com.revly.Model;
 
 public enum UserType {
-    STUDENT,
-    TUTOR
+    ROLE_STUDENT,
+    ROLE_TUTOR
 }

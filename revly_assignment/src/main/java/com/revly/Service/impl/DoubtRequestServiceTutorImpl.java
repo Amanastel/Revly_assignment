@@ -3,7 +3,7 @@ package com.revly.Service.impl;
 import com.revly.Exception.UserException;
 import com.revly.Model.DoubtRequest;
 import com.revly.Model.DoubtResolved;
-import com.revly.Model.User;
+import com.revly.Model.Users;
 import com.revly.Model.UserType;
 import com.revly.Repository.DoubtRequestRepository;
 import com.revly.Repository.TutorAvailabilityRepository;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 public class DoubtRequestServiceTutorImpl implements DoubtRequestServiceTutor {
@@ -37,8 +38,8 @@ public class DoubtRequestServiceTutorImpl implements DoubtRequestServiceTutor {
         DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId)
                 .orElseThrow(() -> new UserException("DoubtRequest not found"));
 
-        User tutor = userRepository.findById(tutorId)
-                .filter(user -> user.getUserType() == UserType.TUTOR)
+        Users tutor = userRepository.findById(tutorId)
+                .filter(user -> Objects.equals(user.getUserType(), "ROLE_TUTOR"))
                 .orElseThrow(() -> new UserException("Tutor not found"));
 
         // Additional check: Ensure the tutor's expertise matches the doubt subject

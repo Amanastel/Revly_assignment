@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user/doubtRequest")
+@RequestMapping("/users/doubtRequest")
 public class DoubtRequestController {
 
     private final DoubtRequestService doubtRequestService;
@@ -20,12 +20,12 @@ public class DoubtRequestController {
 
 
 
-    @PostMapping("/user/{userId}/doubtRequest")
+    @PostMapping("/{userId}")
     public ResponseEntity<DoubtRequest> addDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest, @PathVariable Integer userId) {
         return ResponseEntity.ok(doubtRequestService.addDoubtRequest(doubtRequest, userId));
     }
 
-    @PostMapping("/user/{userId}/doubtRequest/live")
+    @PostMapping("/{userId}/live")
     public ResponseEntity<DoubtRequest> tutorAvailableLiveDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest, @PathVariable Integer userId) {
         return ResponseEntity.ok(doubtRequestService.tutorAvailableLiveDoubtRequest(doubtRequest, userId));
     }

@@ -19,10 +19,10 @@ public class DoubtRequest {
     private Integer id;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "student_id")
-    private User student;
+    private Users student;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "tutor_id")
-    private User tutor;
+    private Users tutor;
     @Enumerated(EnumType.STRING)
     private Subjects doubtSubject;
     private LocalDateTime timestamp;

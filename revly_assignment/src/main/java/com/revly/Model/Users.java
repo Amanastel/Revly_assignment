@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+//    @Enumerated(EnumType.STRING)
+    private String userType;
     @Enumerated(EnumType.STRING)
     private Subjects userLanguage; // for student
     @Enumerated(EnumType.STRING)

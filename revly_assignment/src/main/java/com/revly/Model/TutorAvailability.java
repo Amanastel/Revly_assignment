@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -23,5 +22,5 @@ public class TutorAvailability {
     private LocalDateTime lastPingTime;
     @ManyToOne
     @JoinColumn(name = "tutor_id")
-    private User tutor;
+    private Users tutor;
 }

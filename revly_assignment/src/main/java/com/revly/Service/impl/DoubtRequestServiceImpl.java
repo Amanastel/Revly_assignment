@@ -34,8 +34,8 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
     @Override
     @Transactional
     public DoubtRequest addDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
-        if(user.getUserType().equals(UserType.STUDENT)) {
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
+        if(user.getUserType().equals("ROLE_TUTOR")) {
             doubtRequest.setDoubtDescription("Student doubt description: " + doubtRequest.getDoubtDescription());
             doubtRequest.setStudent(user);
             doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
@@ -79,13 +79,13 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
     @Override
     @Transactional
     public DoubtRequest tutorAvailableLiveDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
 
-        if (user.getUserType().equals(UserType.TUTOR)) {
+        if (user.getUserType().equals("ROLE_TUTOR")) {
             throw new UserException("Only students can create doubt requests");
         }
 
-        if (user.getUserType().equals(UserType.STUDENT)) {
+        if (user.getUserType().equals("ROLE_STUDENT")) {
             List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
 
             if (availableTutors.isEmpty()) {

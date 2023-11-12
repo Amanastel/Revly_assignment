@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user/doubtRequest/tutor")
+@RequestMapping("/users/doubtRequest/tutor")
 public class DoubtRequestTutorController {
 
     private final DoubtRequestService doubtRequestService;
