@@ -53,4 +53,14 @@ public class UserController {
         return ResponseEntity.ok(userService.registerUser(user));
     }
 
+    @PostMapping("user/registerOnlyTutor")
+    public ResponseEntity<User> registerOnlyTutor(@RequestBody User user) {
+        return ResponseEntity.ok(userService.registerOnlyTutor(user));
+    }
+
+    @PostMapping("user/registerOnlyStudent")
+    public ResponseEntity<User> registerOnlyStudent(@RequestBody User user) {
+        return ResponseEntity.ok(userService.registerOnlyStudent(user));
+    }
+
 }

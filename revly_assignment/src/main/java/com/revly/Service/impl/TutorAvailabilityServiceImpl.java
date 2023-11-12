@@ -9,6 +9,7 @@ import com.revly.Repository.DoubtRequestRepository;
 import com.revly.Repository.TutorAvailabilityRepository;
 import com.revly.Repository.UserRepository;
 import com.revly.Service.TutorAvailabilityService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -36,6 +37,7 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService , 
     }
 
     @Override
+    @Transactional
     public TutorAvailability addTutorAvailability(String email) {
         User tutor = userRepository.findByEmail(email)
                 .filter(user -> user.getUserType() == UserType.TUTOR)
@@ -65,11 +67,20 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService , 
         }
     }
 
+    @Override
+    public List<TutorAvailability> availableTutors() {
+        List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        if (availableTutors.isEmpty()) {
+            throw new UserException("No tutors available");
+        } else {
+            return availableTutors;
+        }
+    }
+
 
     @Scheduled(cron = "0 * * * * *") // Run every minute, adjust the cron expression as needed
     public void updateLastPingTimeForAvailableTutors() {
-        List<TutorAvailability> availableTutors = tutorAvailabilityRepository
-                .findByAvailabilityStatus("AVAILABLE");
+        List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
 
         LocalDateTime currentTime = LocalDateTime.now();
 
@@ -103,6 +114,25 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService , 
         }
     }
 
+
+    @Scheduled(cron = "0 * * * * *") // Run every minute, adjust the cron expression as needed
+    public void countOnlineTutors() {
+        LocalDateTime currentTime = LocalDateTime.now().minusSeconds(3);
+
+        List<TutorAvailability> onlineTutors = tutorAvailabilityRepository.findByLastPingTimeAfter(currentTime);
+
+        int onlineTutorCount = onlineTutors.size();
+
+        // Log the online tutors count
+        System.out.println("Number of online tutors: " + onlineTutorCount);
+
+        // You can add additional logic here based on the online tutors count
+        if (onlineTutorCount > 0) {
+            // Perform some action, e.g., update statistics, send notifications, etc.
+            // Example: updateStatistics(onlineTutorCount);
+            // Example: sendNotification("Number of online tutors: " + onlineTutorCount);
+        }
+    }
 
 
     /*
@@ -149,6 +179,8 @@ public void updateTutorAvailabilityStatus(String email) {
 
 
 
+
+
     @Scheduled(cron = "0 * * * * *") // Run every minute, adjust the cron expression as needed
     public void updateTutorAvailabilityStatus(String email) {
         Optional<User> tutorOptional = userRepository.findByEmail(email)
@@ -185,6 +217,7 @@ public void updateTutorAvailabilityStatus(String email) {
 
 
  */
+
 
 
 

@@ -7,6 +7,7 @@ import com.revly.Repository.DoubtRequestRepository;
 import com.revly.Repository.TutorAvailabilityRepository;
 import com.revly.Repository.UserRepository;
 import com.revly.Service.DoubtRequestService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
 
 
     @Override
+    @Transactional
     public DoubtRequest addDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
         if(user.getUserType().equals(UserType.STUDENT)) {
@@ -75,6 +77,7 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
 //
 
     @Override
+    @Transactional
     public DoubtRequest tutorAvailableLiveDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
 
@@ -83,7 +86,7 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
         }
 
         if (user.getUserType().equals(UserType.STUDENT)) {
-            List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus("AVAILABLE");
+            List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
 
             if (availableTutors.isEmpty()) {
                 throw new TutorAvailabilityException("No tutors available");
