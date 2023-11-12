@@ -53,6 +53,8 @@ public class AppConfig {
                               .requestMatchers("/swagger-ui*/**","/v3/api-docs/**").permitAll()
                             .requestMatchers(HttpMethod.POST,"/users/register").permitAll()
                             .requestMatchers(HttpMethod.GET,"/users/**").permitAll()
+                            .requestMatchers("/users/doubtRequest/**").hasRole("STUDENT")
+                            .requestMatchers("/users/doubtRequest/tutor/**").hasRole("TUTOR")
                             .requestMatchers("/users/**").hasRole("TUTOR")
                             .requestMatchers("/users/tutorAvailability/**").hasRole("TUTOR")
                             .requestMatchers("/users/tutorAvailability/availableTutors").hasRole("STUDENT")

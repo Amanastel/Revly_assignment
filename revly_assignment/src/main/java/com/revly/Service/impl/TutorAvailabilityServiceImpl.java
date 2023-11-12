@@ -10,6 +10,7 @@ import com.revly.Repository.TutorAvailabilityRepository;
 import com.revly.Repository.UserRepository;
 import com.revly.Service.TutorAvailabilityService;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
 
     private final TutorAvailabilityRepository tutorAvailabilityRepository;
@@ -77,8 +79,18 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
         }
     }
 
+    @Override
+    public List<TutorAvailability> unavailableTutors() {
+        List<TutorAvailability> unavailableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+        if (unavailableTutors.isEmpty()) {
+            throw new UserException("No tutors unavailable");
+        } else {
+            return unavailableTutors;
+        }
+    }
 
-    @Scheduled(fixedRate = 30000) // Run every minute, adjust the cron expression as needed
+
+    @Scheduled(fixedRate = 3000) // Run every minute, adjust the cron expression as needed
     public void updateLastPingTimeForAvailableTutors() {
         List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
 
@@ -115,109 +127,20 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
     }
 
 
-    @Scheduled(fixedRate = 10000) // Run every minute, adjust the cron expression as needed
-    public void countOnlineTutors() {
+    @Scheduled(fixedRate = 1000)
+    public int countOnlineTutors() {
         LocalDateTime currentTime = LocalDateTime.now().minusSeconds(3);
         int onlineTutorCount = tutorAvailabilityRepository.countAvailableByLastPingTimeAfter(currentTime, LocalDateTime.now());
-
-        List<TutorAvailability> onlineTutors = tutorAvailabilityRepository.findByLastPingTimeAfter(currentTime);
-
-        int onlineTutorCountw = onlineTutors.size();
-
-        // Log the online tutors count
         if (onlineTutorCount > 0) {
             System.out.println("Number of online tutors: " + onlineTutorCount);
+            return onlineTutorCount;
+        }else{
+            throw new UserException("No tutors available");
         }
 
 
 
-        // You can add additional logic here based on the online tutors count
-
     }
-
-
-    /*
-    @Scheduled(cron = "0 * * * * *") // Run every minute, adjust the cron expression as needed
-public void updateTutorAvailabilityStatus(String email) {
-    LocalDateTime currentTime = LocalDateTime.now().minusSeconds(3);
-
-    Optional<User> tutorOptional = userRepository.findByEmail(email)
-            .filter(user -> user.getUserType() == UserType.TUTOR);
-
-    if (tutorOptional.isPresent()) {
-        User tutor = tutorOptional.get();
-
-        // Check if the tutor is available
-        Optional<TutorAvailability> tutorAvailabilityOptional = tutorAvailabilityRepository.findByTutor(tutor);
-
-        tutorAvailabilityOptional.ifPresent(tutorAvailability -> {
-            if (tutorAvailability.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
-                // Tutor is available, update the availability status
-                List<TutorAvailability> onlineTutors = tutorAvailabilityRepository.findByLastPingTimeAfter(currentTime);
-
-                for (TutorAvailability onlineTutor : onlineTutors) {
-                    if (onlineTutor.getTutor().equals(tutor)) {
-                        onlineTutor.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
-                        tutorAvailabilityRepository.save(onlineTutor);
-                    }
-                }
-
-                // Set availability status to UNAVAILABLE for tutors not updated in the last 3 seconds
-                List<TutorAvailability> offlineTutors = tutorAvailabilityRepository.findByLastPingTimeBefore(currentTime);
-                for (TutorAvailability offlineTutor : offlineTutors) {
-                    if (offlineTutor.getTutor().equals(tutor)) {
-                        offlineTutor.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
-                        tutorAvailabilityRepository.save(offlineTutor);
-                    }
-                }
-            }
-        });
-    }
-}
-     */
-
-/*
-
-
-
-
-
-    @Scheduled(cron = "0 * * * * *") // Run every minute, adjust the cron expression as needed
-    public void updateTutorAvailabilityStatus(String email) {
-        Optional<User> tutorOptional = userRepository.findByEmail(email)
-                .filter(user -> user.getUserType() == UserType.TUTOR);
-
-        if (tutorOptional.isPresent()) {
-            User tutor = tutorOptional.get();
-            TutorAvailability tutorAvailability = tutorAvailabilityRepository.findByTutor(tutor)
-                    .orElse(new TutorAvailability());
-
-            LocalDateTime currentTime = LocalDateTime.now();
-
-            // Update lastPingTime
-            tutorAvailability.setLastPingTime(currentTime);
-
-            // Check and update availability status
-            if (tutorAvailability.getLastPingTime() != null && isWithin3SecondsWindow(tutorAvailability.getLastPingTime(), currentTime)) {
-                // Tutor is online
-                tutorAvailability.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
-            } else {
-                // Tutor is offline
-                tutorAvailability.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
-            }
-
-            tutorAvailabilityRepository.save(tutorAvailability);
-        } else {
-            throw new UserException("Tutor not found");
-        }
-    }
-
-    private boolean isWithin3SecondsWindow(LocalDateTime lastPingTime, LocalDateTime currentTime) {
-        return Duration.between(lastPingTime, currentTime).abs().getSeconds() <= 3;
-    }
-
-
- */
 
 
 

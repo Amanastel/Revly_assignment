@@ -30,4 +30,14 @@ public class TutorAvailabilityController {
     public ResponseEntity<List<TutorAvailability>> availableTutorsHandler() {
         return ResponseEntity.ok(tutorAvailabilityService.availableTutors());
     }
+
+    @GetMapping("/unavailableTutors")
+    public ResponseEntity<List<TutorAvailability>> unavailableTutorsHandler() {
+        return ResponseEntity.ok(tutorAvailabilityService.unavailableTutors());
+    }
+
+    @GetMapping("/countOnlineTutors")
+    public int countOnlineTutorsHandler() {
+        return tutorAvailabilityService.countOnlineTutors();
+    }
 }

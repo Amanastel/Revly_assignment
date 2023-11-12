@@ -4,6 +4,7 @@ import com.revly.Model.DoubtRequest;
 import com.revly.Service.DoubtRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +21,14 @@ public class DoubtRequestController {
 
 
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<DoubtRequest> addDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest, @PathVariable Integer userId) {
-        return ResponseEntity.ok(doubtRequestService.addDoubtRequest(doubtRequest, userId));
+    @PostMapping
+    public ResponseEntity<DoubtRequest> addDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest) {
+        return ResponseEntity.ok(doubtRequestService.addDoubtRequest(doubtRequest));
     }
 
-    @PostMapping("/{userId}/live")
-    public ResponseEntity<DoubtRequest> tutorAvailableLiveDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest, @PathVariable Integer userId) {
-        return ResponseEntity.ok(doubtRequestService.tutorAvailableLiveDoubtRequest(doubtRequest, userId));
+    @PostMapping("/live")
+    public ResponseEntity<DoubtRequest> tutorAvailableLiveDoubtRequestHandler(@RequestBody DoubtRequest doubtRequest, Authentication auth) {
+        String email = auth.getName();
+        return ResponseEntity.ok(doubtRequestService.tutorAvailableLiveDoubtRequest(doubtRequest, auth.getName()));
     }
 }

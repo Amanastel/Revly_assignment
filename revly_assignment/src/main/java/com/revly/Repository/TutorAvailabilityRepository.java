@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface TutorAvailabilityRepository extends JpaRepository<TutorAvailability, Integer> {
     public Optional<TutorAvailability> findByTutor(Users tutor);
     public List<TutorAvailability> findByAvailabilityStatus(AvailabilityStatus availabilityStatus);
-    public List<TutorAvailability> findByLastPingTimeAfter(LocalDateTime lastPingTime);
     @Query("SELECT COUNT(ta) FROM TutorAvailability ta WHERE ta.lastPingTime BETWEEN :startTime AND :endTime")
     public int countAvailableByLastPingTimeAfter(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
