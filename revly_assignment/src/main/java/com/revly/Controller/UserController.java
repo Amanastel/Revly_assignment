@@ -4,9 +4,13 @@ import com.revly.Model.User;
 import com.revly.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 @RestController
 public class UserController {
 
@@ -61,6 +65,21 @@ public class UserController {
     @PostMapping("user/registerOnlyStudent")
     public ResponseEntity<User> registerOnlyStudent(@RequestBody User user) {
         return ResponseEntity.ok(userService.registerOnlyStudent(user));
+    }
+
+    @GetMapping("user/getAllUsers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("user/getAllTutors")
+    public ResponseEntity<List<User>> getAllTutors() {
+        return ResponseEntity.ok(userService.getAllTutors());
+    }
+
+    @GetMapping("user/getAllStudents")
+    public ResponseEntity<List<User>> getAllStudents() {
+        return ResponseEntity.ok(userService.getAllStudents());
     }
 
 }
