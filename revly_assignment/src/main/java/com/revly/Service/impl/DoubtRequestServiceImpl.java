@@ -34,7 +34,9 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
     public DoubtRequest addDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
         if(user.getUserType().equals(UserType.STUDENT)) {
+            doubtRequest.setDoubtDescription("Student doubt description: " + doubtRequest.getDoubtDescription());
             doubtRequest.setStudent(user);
+            doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
             doubtRequest.setTimestamp(LocalDateTime.now());
             return doubtRequestRepository.save(doubtRequest);
         }
