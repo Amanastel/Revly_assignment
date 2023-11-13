@@ -1,12 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Available Tutor</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-  </head>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
   <style>
     .navbar{
       box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -23,7 +25,7 @@
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">All Available Tutor</a>
+                    <a class="nav-link active" aria-current="page" href="#">Find All Available Tutor</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link active" href="AddDoubt.html">Add Doubt</a>
@@ -51,38 +53,63 @@
             </div>
           </nav>
     </div>
-    <div class="container-fluid mt-3">
-        <table class="table table-bordered table-striped table-success">
+    <div class="container mt-3">
+        <table class="table table-bordered table-striped table-success ">
             <thead>
               <tr>
-                <th scope="col">User Id</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">userType</th>
-                <th scope="col">classGrade</th>
-                <th scope="col">userLanguage</th>
-                <th scope="col">subjectExpertise</th>
-            
+                <th scope="col">Tutor Id</th>
+                <th scope="col">Tutor Name</th>
+                <th scope="col">Tutor Email</th>
+                <th scope="col">Tutor Subject Expertise</th>
+                <th scope="col">Tutor Last Ping Time</th>
+                <th scope="col">Tutor Subject Expertise</th>
               </tr>
             </thead>
             <tbody id="tbody">
-              <!-- <tr>
-                <th scope="row" class="dId"></th>
-                <td class="dName">Mark</td>
-                <td class="dEmail">Otto</td>
-                <td class="dAddress">@mdo</td>
-                <td class="dMob">@mdo</td>
-                <td class="dLic">@mdo</td>
-                <td class="dRateing">@mdo</td>
-              </tr> -->
+
             </tbody>
           </table>
     </div>
-    
-   
+</body>
+<script>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="script/Driver.js"></script>
-  </body>
+getAllAvailabeTutor()
+function getAllAvailabeTutor(){
+    const token=localStorage.getItem('jwtToken');
+    // console.log(token+" hello");
+
+    fetch("http://localhost:8888/users/tutorAvailability/getAllTutorAvailabilityByStudent",{
+       method:"GET",
+       headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(response=>{
+    if(response.ok){
+        response.json().then(data=>{
+            data.forEach(user => {
+                console.log(user);
+                console.log(user.doubtSubject);
+                const row=document.createElement("tr");
+                row.innerHTML=`
+                <td>${user.tutor.id}</td>
+                <td>${user.tutor.name}</td>
+                <td>${user.tutor.email}</td>
+                <td>${user.tutor.subjectExpertise}</td>
+                <td>${user.lastPingTime}</td>
+                <td>${user.availabilityStatus}</td>
+                `;
+                tbody.appendChild(row);
+            })
+        })
+    }
+    else{
+        console.log("testing");
+        response.json().then(data=>alert("Sometging went wrong !"));
+    }
+    })
+}
+
+
+</script>
 </html>
