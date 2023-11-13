@@ -36,54 +36,36 @@ loginForm.addEventListener("submit", function (event) {
                     console.log(token)
                     localStorage.setItem("jwtToken", token)
 
-
-                    Swal.fire(
-                        'Good job!',
-                        'Successfully Registered',
-                        'success'
-                    )
-
-                    res.json().then(data => {
-                        console.log(data.role, "line 47")
-                        localStorage.setItem("username", data.username)
+                    res.json().then(data =>{
+                        console.log(data);
+                        // alert("heelo")
+                        alert("Tutor sucessfully registered with Name: "+data.name)
+                        localStorage.setItem("name", data.name)
                         localStorage.setItem("userData", JSON.stringify(data))
-                        if (data.role == "ROLE_STUDENT") {
+                        Swal.fire(
+                            'Good job!',
+                            'Successfully Registered',
+                            'success'
+                        )
+                        if (data.userType == "ROLE_STUDENT") {
                             setTimeout(() => {
-                                window.location.href = "/Student.html"
+                                window.location.href = "../Student.html"
                             }, 2000)
-                        }else{
+                        } else {
                             setTimeout(() => {
                                 window.location.href = "/index.html"
                             }, 2000)
                         }
                     })
-                    
-
-
-
-                } else {
-                    // alert("Invalid Credentials")
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Invalid Credentials',
-                        footer: '<a href="">Why do I have this issue?</a>'
-                    })
-                }
+            
+                    console.log(res)
+                } 
             })
             .catch(error => {
                 console.error(error);
                 alert("Invalid Credentials")
             });
-    } else {
-        // alert("please fill all details")
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'please fill all details',
-            footer: '<a href="">Why do I have this issue?</a>'
-        })
-    }
+    } 
 
 });
 const signupForm = document.getElementById("signup-form");
@@ -109,57 +91,74 @@ signupForm.addEventListener("submit", function (event) {
     const userType = userTypeInput.value;
 
 
+    if(userType=="TUTOR"){
+
+        const data = {
+            name: username,
+            password: password,
+            email: email,
+            phone: phone,
+            address: addrss,
+            subjectExpertise: subjectExpertise,
+            userType: userType
+        };
     
-    const data = {
-        username: username,
-        password: password,
-        email: email,
-        phone: phone,
-        address: addrss,
-        userLanguage: userLanguage,
-        subjectExpertise: subjectExpertise,
-        userType: userType
-    };
+        
+        console.log(data);
+    
+        if (email && password && username !== "") {
+            fetch("http://localhost:8888/users/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if(response.status == 201 | response.status == 200){
+                    response.json().then(data => {
+                        alert("Tutor sucessfully registered with Name: "+data.name)
+                        console.log(data)
+                    });
+                }else{
+                    response.json().then(data => alert(data.message));
+                }
+            })
+                
+        }
+    }else{
+        const data = {
+            name: username,
+            password: password,
+            email: email,
+            phone: phone,
+            address: addrss,
+            userLanguage: userLanguage,
+            userType: userType,
+            classGrade: "10"
 
-    console.log(data);
-
-    if (email && password && username !== "") {
-        fetch("http://localhost:8888/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-        .then(res => res.json())
-        .then(res => {
-            console.log(res)
-            if (res) {
-                Swal.fire(
-                    'Good job!',
-                    'Successfully Registered',
-                    'success'
-                )
-
-                setTimeout(() => {
-                    window.location.href = "login.html"
-                }, 1000)
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'User Already Exists',
-                    footer: '<a href="">Why do I have this issue?</a>'
-                })
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    } else {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Please fill all details',
-            footer: '<a href="">Why do I have this issue?</a>'
-        })
+        };
+    
+        
+        console.log(data);
+    
+        if (email && password && username !== "") {
+            fetch("http://localhost:8888/users/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if(response.status == 201 | response.status == 200){
+                    response.json().then(data => {
+                        alert("Student sucessfully registered with Name: "+data.name)
+                        console.log(data)
+                    });
+                }else{
+                    response.json().then(data => alert(data.message));
+                }
+            })
+                
+        }
     }
+
+    
 });
