@@ -24,32 +24,20 @@
               </button>
               <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Find All Available Tutor</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="AddDoubt.html">Add Doubt</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="findDriverByemail.html">Find Doubt</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="bestDriver.html">Find Resolve Doubt</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="AllCar.html">Find Unresolved Doubt</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="Getalluser.html">All Doubt</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="findUser.html">Find User</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link active" href="cabBooking.html">Add Live Doubt</a>
-                  </li>
-                </ul>
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="FindAllAvailableTutor.html">Find All Available Tutor</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="AddDoubt.html">Add Doubt</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="/Unresolved.html">Update Doubt</a>
+                    </li>
+                  </ul>
               </div>
+            </div>
+            <div class="nav-item dropdown ">
+                <a href="Login.html" id="login" class="btn btn-primary"> Login</a>
             </div>
           </nav>
     </div>
@@ -105,7 +93,7 @@ function getAllAvailabeTutor(){
     }
     else{
         console.log("testing");
-        response.json().then(data=>alert("Sometging went wrong !"));
+        response.json().then(data=>alert("No tutor Available !"));
     }
     })
 }

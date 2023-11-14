@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<style>
+    .navbar {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+</style>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg pt-3 pb-3" style="background-color: #ffffff;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html"><i class="fa fa-cube"></i>Doubt<b>Session</b></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="FindAllAvailableTutor.html">Find All Available Tutor</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link active" href="AddDoubt.html">Add Doubt</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link active" href="/ResolveDoubt.html">Find Resolve Doubt</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link active" href="/Unresolved.html">Update Doubt</a>
+                        </li>
+                      </ul>
+                </div>
+            </div>
+            <div class="nav-item dropdown ">
+                <a href="Login.html" id="login" class="btn btn-primary"> Login</a>
+            </div>
+        </nav>
+    </div>
+    <div class="container">
+
+        <div class="card" style="width: 50rem; left: 20%; margin-top: 3rem;">
+            <h2 id="nameDount"> </h2>
+            <div class="card-body">
+                <form class="row g-3" id="form">
+                    <div class="col-md-6">
+                        <label for="username" class="form-label">Update Doubt Description</label>
+                        <input type="text" class="form-control" id="doubtDescription" placeholder="Description">
+                        <label for="subjectExpertise">Subject Expertise:</label>
+                        <option id="subjectExpertise" value=""></option>
+                    </div>
+
+                    <div class="col-12">
+                        <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-3">
+        <table class="table table-bordered table-striped table-success ">
+            <thead>
+                <tr>
+                    <th scope="col">Doubt Id</th>
+                    <th scope="col">Student name</th>
+                    <th scope="col">Doubt Subject</th>
+                    <th scope="col">Doubt Registration Date</th>
+                    <th scope="col">Doubt Description </th>
+                    <th scope="col">Doubt Resolved</th>
+                    <th scope="col">Tutor Id</th>
+                    <th scope="col">Tutor name</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+    </div>
+</body>
+
+
+<script>
+    let descriptions = document.getElementById("doubtDescription");
+    let subjectExpertise = document.getElementById("subjectExpertise");
+    let nameDoubt = document.getElementById("nameDount");
+    console.log(nameDoubt);
+
+
+    let userData = JSON.parse(localStorage.getItem("userData"));
+    subjectExpertise.innerText = userData.userLanguage;
+    nameDoubt.innerText = "Please Update your Doubt Mr. " + userData.name;
+
+
+    function updateDoubtByID(id) {
+        let submitBtn = document.getElementById("submit");
+        submitBtn.innerText = "UPDATE"
+        console.log(id)
+        let newID = id;
+        document.getElementById("submit").addEventListener("click", (e) => {
+            e.preventDefault();
+            let description = descriptions.value;
+            console.log(description);
+
+            const token = localStorage.getItem("jwtToken");
+            const newDoubtDescription = description;
+            if (newDoubtDescription === null) {
+                return; // User clicked Cancel
+            }
+
+            fetch(`http://localhost:8888/users/doubtRequest/${newID}/${newDoubtDescription}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        response.json().then(data => {
+                            console.log(data);
+                            alert("Doubt updated successfully");
+                            // Reload the page to reflect the changes
+                            window.location.reload();
+                        })
+                    }
+                    else {
+                        console.log("testing");
+                        response.json().then(data => alert("Sometging went wrong !"));
+                    }
+
+                })
+        })
+    }
+
+
+
+
+    getallusers();
+    function getallusers() {
+        // const usertablebody=document.getElementById("tbody");
+        const token = localStorage.getItem('jwtToken');
+        // console.log(token+" hello");
+
+        fetch("http://localhost:8888/users/doubtRequest/all", {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(data => {
+                    // console.log(data);
+                    // console.log(data);
+                    data.forEach(user => {
+                        console.log(user);
+                        console.log(user.doubtSubject);
+                        // <td>${user.tutor.id}</td>
+                        // <td>${user.tutor.name}</td>
+                        if (user.doubtResolved == "UNRESOLVED") {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.student.name}</td>
+                <td>${user.doubtSubject}</td>
+                <td>${user.timestamp}</td>
+                <td>${user.doubtDescription}</td>
+                <td>${user.doubtResolved}</td>
+                <td>${user.tutor.id}</td>
+                <td>${user.tutor.name}</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteDoubt(${user.id})">Delete</button>
+                    <button class="btn btn-primary" onclick="updateDoubtByID(${user.id})">Update</button>
+                </td>
+                
+                `;
+                            tbody.appendChild(row);
+
+                        }
+
+                    })
+                })
+            }
+            else {
+                console.log("testing");
+                response.json().then(data => alert("Sometging went wrong !"));
+            }
+        })
+    }
+    function deleteDoubt(doubtId) {
+        console.log("check deleteDoubt");
+        const token = localStorage.getItem("jwtToken");
+
+        fetch(`http://localhost:8888/users/doubtRequest/${doubtId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    alert("Doubt deleted successfully");
+                    // Reload the page to reflect the changes
+                    window.location.reload();
+                } else {
+                    response.json().then((data) => alert("Error deleting doubt: " + data.message));
+                }
+            })
+            .catch((error) => alert("Error deleting doubt: " + error));
+    }
+
+
+</script>
+
+</html>

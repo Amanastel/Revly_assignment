@@ -49,11 +49,11 @@ loginForm.addEventListener("submit", function (event) {
                         )
                         if (data.userType == "ROLE_STUDENT") {
                             setTimeout(() => {
-                                window.location.href = "../Student.html"
+                                window.location.href = "../AddDoubt.html"
                             }, 2000)
                         } else {
                             setTimeout(() => {
-                                window.location.href = "/index.html"
+                                window.location.href = "/tutor.html"
                             }, 2000)
                         }
                     })

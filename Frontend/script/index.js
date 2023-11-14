@@ -1,117 +1,97 @@
+let descriptions = document.getElementById("doubtDescription");
+let subjectExpertise = document.getElementById("subjectExpertise");
+let nameDoubt = document.getElementById("nameDount");
+console.log(nameDoubt);
+
+countchek()
 
 
-let bookCab = document.getElementById("subBtn");
-
-let usern = document.getElementById('userN');
-const names = localStorage.getItem("username");
-
-if (names != undefined) {
-    usern.innerHTML = names;
-} else {
-    usern.innerHTML = "Your Name";
-}
-
-console.log(usern);
-console.log(names);
-
-window.onload = () => {
-
-    let userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData != undefined) {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('logout').style.display = 'block';
-    } else {
-        document.getElementById('login').style.display = 'block';
-        document.getElementById('logout').style.display = 'none';
-
-    }
-    console.log(userData);
-
-
-
-}
-
-let logout = document.getElementById("logout");
-logout.addEventListener('click', function (event) {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('username');
-    localStorage.removeItem('jwtToken');
-    window.location.href = "../index.html";
-
-    console.log("hello text ");
-});
-
-let logoutUser = () => {
-
-};
-
-
-
-bookCab.addEventListener('click', function (event) {
-    let pickUp = document.getElementById('pickUp');
-    let to = document.getElementById('to');
-    let distance = document.getElementById('distance');
-    event.preventDefault();
-    console.log('hello');
-    var cabData = {
-        "fromLocation": "delhi",
-        "toLocation": "kanpur",
-        "distanceInKm": 12.0
-
-    }
+getallusers();
+function getallusers() {
+    // const usertablebody=document.getElementById("tbody");
     const token = localStorage.getItem('jwtToken');
+    // console.log(token+" hello");
 
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", "Bearer " + token);
-
-    var raw = JSON.stringify({
-        "fromLocation": pickUp.value,
-        "toLocation": to.value,
-        "distanceInKm": distance.value
-    });
-
-    var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
-
-    fetch("http://localhost:8888/cabBooking", requestOptions)
-        // .then(response => response.text())
-        // .then((result) => console.log(result))
-        // .catch((error) => console.log("error", error));
-        .then(response => {
-            if (response.ok) {
-                console.log("hii")
-                response.json().then(data => {
-                    Swal.fire(
-                        'Good job!',
-                        'Ride Booked ',
-                        'success'
-                    )
-                    console.log(data);
-                    setTimeout(() => {
-                        window.location.href = "/profile.html"
-                    }, 3000)
+    fetch("http://localhost:8888/users/doubtRequest/all", {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then(response => {
+        if (response.ok) {
+            response.json().then(data => {
+                // console.log(data);
+                // console.log(data);
+                data.forEach(user => {
+                    console.log(user);
+                    console.log(user.doubtSubject);
+                    // <td>${user.tutor.id}</td>
+                    // <td>${user.tutor.name}</td>
+                    if (user.tutor == null) {
+                        user.tutor = { id: "NA", name: "NA" };
+                    }
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.student.name}</td>
+                <td>${user.doubtSubject}</td>
+                <td>${user.timestamp}</td>
+                <td>${user.doubtDescription}</td>
+                <td>${user.doubtResolved}</td>
+                <td>${user.tutor.id}</td>
+                <td>${user.tutor.name}</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteDoubt(${user.id})">Delete</button>
+                </td>
+                `;
+                    tbody.appendChild(row);
                 })
+            })
+        }
+        else {
+            console.log("testing");
+            response.json().then(data => alert("Sometging went wrong !"));
+        }
+    })
+}
+function deleteDoubt(doubtId) {
+    console.log("check deleteDoubt");
+    const token = localStorage.getItem("jwtToken");
 
+    fetch(`http://localhost:8888/users/doubtRequest/${doubtId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    })
+        .then((response) => {
+            if (response.ok) {
+                alert("Doubt deleted successfully");
+                // Reload the page to reflect the changes
+                window.location.reload();
             } else {
-                response.json().then(data => Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: data.message,
-                    footer: '<a href="">Why do I have this issue?</a>'
-                }));
+                response.json().then((data) => alert("Error deleting doubt: " + data.message));
             }
         })
+        .catch((error) => alert("Error deleting doubt: " + error));
+}
 
+function countchek() {
+    const token = localStorage.getItem("jwtToken");
+    fetch(`http://localhost:8888/users/tutorAvailability/countOnlineTutors`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    }).then(response => {
+        if (response.ok) {
+            response.json().then(data => {
+                console.log(data);
+                document.getElementById("count").innerText = "Online Tutor: "+data;
+            })
+        }
+    })
 
-
-
-
-});
-
-
-
+}
