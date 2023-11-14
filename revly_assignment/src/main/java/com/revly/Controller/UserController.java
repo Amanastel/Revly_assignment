@@ -149,9 +149,6 @@ public class UserController {
     public ResponseEntity<Users > getLoggedInCustomerDetailsHandler(Authentication auth) {
         Users users = userService.getUserByEmail(auth.getName());
         log.info("User: {}", auth.getName());
-        if(users.getUserType().equalsIgnoreCase("ROLE_TUTOR")){
-            tutorAvailabilityService.addTutorAvailability(users.getEmail());
-        }
         return new ResponseEntity<>(users, HttpStatus.ACCEPTED);
     }
 

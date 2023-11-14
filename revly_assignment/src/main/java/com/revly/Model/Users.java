@@ -34,7 +34,6 @@ public class Users {
     private String email;
 
     @NotNull(message = "Password cannot be null")
-    @Size(min = 4, max = 30, message = "Password must be between 4 and 30 characters")
     private String password;
 
     @NotNull(message = "Address cannot be null")
