@@ -21,6 +21,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+    /**
+     * Registers a new user and sets the registration date.
+     *
+     * @param user The user to be registered.
+     * @return The registered user.
+     */
     @Override
     @Transactional
     public Users registerUser(Users user) {
@@ -28,6 +35,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+
+    /**
+     * Registers a user only if the user type is "ROLE_TUTOR".
+     *
+     * @param user The user to be registered.
+     * @return The registered tutor.
+     * @throws UserException if the user type is not "ROLE_TUTOR".
+     */
     @Override
     public Users registerOnlyTutor(Users user) {
         if(user.getUserType().equalsIgnoreCase("ROLE_TUTOR")){
@@ -37,6 +52,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
+    /**
+     * Registers a user only if the user type is "ROLE_STUDENT".
+     *
+     * @param user The user to be registered.
+     * @return The registered student.
+     * @throws UserException if the user type is not "ROLE_STUDENT".
+     */
     @Override
     public Users registerOnlyStudent(Users user) {
         if(user.getUserType().equalsIgnoreCase("ROLE_STUDENT")){
@@ -46,12 +69,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email The email of the user.
+     * @return The user with the specified email.
+     * @throws UserException if the user is not found.
+     */
     @Override
     public Users getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserException("User not found"));
     }
 
+
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return List of all users.
+     * @throws UserException if no users are found.
+     */
     @Override
     public List<Users> getAllUsers() {
         List<Users> users = userRepository.findAll();
@@ -62,6 +100,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Retrieves a list of all tutors.
+     *
+     * @return List of all tutors.
+     * @throws UserException if no tutors are found.
+     */
     @Override
     public List<Users> getAllTutors() {
         List<Users> tutors = userRepository.findAll();
@@ -79,6 +123,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
+    /**
+     * Retrieves a list of all students.
+     *
+     * @return List of all students.
+     * @throws UserException if no students are found.
+     */
     @Override
     public List<Users> getAllStudents() {
         List<Users> students = userRepository.findAll();

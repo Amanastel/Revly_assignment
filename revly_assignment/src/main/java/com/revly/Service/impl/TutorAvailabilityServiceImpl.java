@@ -38,6 +38,14 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
         this.doubtRequestRepository = doubtRequestRepository;
     }
 
+
+    /**
+     * Adds or updates the tutor's availability status to AVAILABLE.
+     *
+     * @param email The email of the tutor.
+     * @return The TutorAvailability object representing the tutor's availability.
+     * @throws UserException if the user is not a tutor or tutor is already marked as AVAILABLE.
+     */
     @Override
     @Transactional
     public TutorAvailability addTutorAvailability(String email) {
@@ -69,6 +77,12 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
         }
     }
 
+    /**
+     * Retrieves a list of available tutors.
+     *
+     * @return List of available TutorAvailability objects.
+     * @throws UserException if no tutors are available.
+     */
     @Override
     public List<TutorAvailability> availableTutors() {
         List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
@@ -79,6 +93,12 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
         }
     }
 
+    /**
+     * Retrieves a list of unavailable tutors.
+     *
+     * @return List of unavailable TutorAvailability objects.
+     * @throws UserException if no tutors are unavailable.
+     */
     @Override
     public List<TutorAvailability> unavailableTutors() {
         List<TutorAvailability> unavailableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
@@ -90,7 +110,10 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
     }
 
 
-    @Scheduled(fixedRate = 3000) // Run every minute, adjust the cron expression as needed
+    /**
+     * Scheduled task to update the last ping time for available tutors.
+     */
+    @Scheduled(fixedRate = 3000) // Run every 3 seconds
     public void updateLastPingTimeForAvailableTutors() {
         List<TutorAvailability> availableTutors = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
 
@@ -110,6 +133,11 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
 //
 //    }
 
+    /**
+    * Marks a tutor as away, updating their availability status to AWAY.
+    *
+    * @param tutorEmail The email of the tutor.
+    */
     public void markTutorAway(String tutorEmail) {
         Optional<Users> tutorOptional = userRepository.findByEmail(tutorEmail)
                 .filter(user -> Objects.equals(user.getUserType(), "ROLE_TUTOR"));
@@ -127,6 +155,11 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
     }
 
 
+    /**
+     * Scheduled task to count the number of online tutors.
+     *
+     * @return The count of online tutors.
+     */
     @Scheduled(fixedRate = 1000)
     public int countOnlineTutors() {
         LocalDateTime currentTime = LocalDateTime.now().minusSeconds(3);
@@ -142,6 +175,14 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
 
     }
 
+
+    /**
+     * Retrieves all available tutors for a specific subject based on the student's email.
+     *
+     * @param email The email of the student.
+     * @return List of available TutorAvailability objects for the subject.
+     * @throws UserException if the user is not a student, no tutors are available, or no tutors are available for the subject.
+     */
     @Override
     public List<TutorAvailability> getAllTutorAvailabilityByStudentEmail(String email) {
         Users student = userRepository.findByEmail(email)

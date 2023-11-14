@@ -32,7 +32,13 @@ public class Users {
     @NotNull(message = "Email cannot be null")
     @Column(unique = true)
     private String email;
+
+    @NotNull(message = "Password cannot be null")
+    @Size(min = 4, max = 30, message = "Password must be between 4 and 30 characters")
     private String password;
+
+    @NotNull(message = "Address cannot be null")
+    @Size(min = 4, max = 100, message = "Address must be between 4 and 100 characters")
     private String address;
     private LocalDateTime registrationDate;
 

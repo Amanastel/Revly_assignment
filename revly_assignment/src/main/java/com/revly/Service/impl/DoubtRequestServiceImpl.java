@@ -35,6 +35,13 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
 
 
 
+    /**
+     * Adds a doubt request for a student.
+     *
+     * @param doubtRequest The DoubtRequest object containing the doubt details.
+     * @return The saved DoubtRequest.
+     * @throws UserException if the user is not a student.
+     */
     @Override
     @Transactional
     public DoubtRequest addDoubtRequest(DoubtRequest doubtRequest) {
@@ -56,6 +63,16 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
     }
 
 
+    /**
+     * Creates a live doubt request for a student, assigning an available tutor.
+     *
+     * @param doubtRequest The DoubtRequest object containing the doubt details.
+     * @param email        The email of the student making the request.
+     * @return The saved DoubtRequest.
+     * @throws UserException          if the user is a tutor.
+     * @throws TutorAvailabilityException if no available tutors are found.
+     * @throws UserException          if no matching tutor is available.
+     */
     @Override
     @Transactional
     public DoubtRequest tutorAvailableLiveDoubtRequest(DoubtRequest doubtRequest, String email) {
@@ -95,11 +112,27 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
 
     }
 
+    /**
+     * Retrieves a doubt request by its ID.
+     *
+     * @param doubtRequestId The ID of the doubt request to retrieve.
+     * @return The DoubtRequest object.
+     * @throws UserException if the doubt request is not found.
+     */
     @Override
     public DoubtRequest findDoubtRequestById(Integer doubtRequestId) {
         return doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
     }
 
+
+    /**
+     * Updates the description of an unresolved doubt request.
+     *
+     * @param doubtRequestId    The ID of the doubt request to update.
+     * @param doubtDescription The new description to set.
+     * @return The updated DoubtRequest.
+     * @throws UserException if the doubt request is not found or is already resolved.
+     */
     @Override
     public DoubtRequest updateUnresolvedDoubts(Integer doubtRequestId, String doubtDescription) {
         DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
@@ -114,6 +147,13 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
     }
 
 
+    /**
+     * Deletes a doubt request by its ID.
+     *
+     * @param doubtRequestId The ID of the doubt request to delete.
+     * @return The deleted DoubtRequest.
+     * @throws UserException if the doubt request is not found.
+     */
     @Override
     public DoubtRequest deleteDoubtRequestById(Integer doubtRequestId) {
         DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
@@ -126,17 +166,38 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
         return doubtRequest;
     }
 
+    /**
+     * Retrieves all doubt requests for a given student.
+     *
+     * @param email The email of the student.
+     * @return List of DoubtRequest objects for the student.
+     * @throws UserException if the user is not found.
+     */
     @Override
     public List<DoubtRequest> getAllDoubtRequest(String email) {
         return doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
     }
 
+    /**
+     * Retrieves all resolved doubt requests for a given student.
+     *
+     * @param email The email of the student.
+     * @return List of resolved DoubtRequest objects for the student.
+     * @throws UserException if the user is not found.
+     */
     @Override
     public List<DoubtRequest> getAllResolvedDoubtRequest(String email) {
         List<DoubtRequest> doubtRequests = doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
         return doubtRequests.stream().filter(doubtRequest -> doubtRequest.getDoubtResolved() == DoubtResolved.RESOLVED).toList();
     }
 
+    /**
+     * Retrieves all unresolved doubt requests for a given student.
+     *
+     * @param email The email of the student.
+     * @return List of unresolved DoubtRequest objects for the student.
+     * @throws UserException if the user is not found.
+     */
     @Override
     public List<DoubtRequest> getAllPendingDoubtRequest(String email) {
         List<DoubtRequest> doubtRequests = doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
