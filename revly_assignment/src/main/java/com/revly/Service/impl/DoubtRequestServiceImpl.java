@@ -45,6 +45,7 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
         if(user.getUserType().equals("ROLE_STUDENT")) {
             doubtRequest.setDoubtDescription("Student doubt description: " + doubtRequest.getDoubtDescription());
             doubtRequest.setStudent(user);
+            doubtRequest.setDoubtSubject(user.getUserLanguage());
             doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
             doubtRequest.setTimestamp(LocalDateTime.now());
             return doubtRequestRepository.save(doubtRequest);
@@ -77,12 +78,13 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
                     .findFirst()
                     .orElseThrow(() -> new UserException("No matching tutor available"));
 
-            selectedTutor.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+            selectedTutor.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
             tutorAvailabilityRepository.save(selectedTutor);
 
             doubtRequest.setDoubtDescription("Student doubt description: " + doubtRequest.getDoubtDescription());
             doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
             doubtRequest.setStudent(user);
+            doubtRequest.setDoubtSubject(user.getUserLanguage());
             doubtRequest.setTutor(selectedTutor.getTutor());
             doubtRequest.setTimestamp(LocalDateTime.now());
 
@@ -93,35 +95,53 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
 
     }
 
+    @Override
+    public DoubtRequest findDoubtRequestById(Integer doubtRequestId) {
+        return doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
+    }
 
-    //    @Override
-//    public DoubtRequest tutorAvailableLiveDoubtRequest(DoubtRequest doubtRequest, Integer userId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new UserException("User not found"));
-//        List<TutorAvailability> tutorAvailabilityList = tutorAvailabilityRepository.findByAvailabilityStatus("AVAILABLE");
-//        if(user.getUserType().equals(UserType.TUTOR)) {
-//            if(tutorAvailabilityList.size() > 0) {
-//                // here i want to check tutor subjectExpertise and students subject same then only i want to assign tutor to student here you can use stream api
-//
-//
-//
-//
-//                TutorAvailability tutorAvailability = tutorAvailabilityList.get(0);
-//
-//                tutorAvailability.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
-//                tutorAvailabilityRepository.save(tutorAvailability);
-//                doubtRequest.setTutor(user);
-//                doubtRequest.setTimestamp(LocalDateTime.now());
-//                return doubtRequestRepository.save(doubtRequest);
-//            }
-//            else {
-//                throw new UserException("No tutors available");
-//            }
-//        }
-//        else {
-//            throw new UserException("Only tutors can accept doubt requests");
-//        }
-//    }
-//
+    @Override
+    public DoubtRequest updateUnresolvedDoubts(Integer doubtRequestId, String doubtDescription) {
+        DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
+        if (doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED) {
+//            doubtRequest.setDoubtDescription(doubtRequest.getDoubtDescription() + "\n" + "Student doubt description: " + doubtDescription);
+            doubtRequest.setDoubtDescription("Student doubt description: " + doubtDescription);
+            doubtRequest.setTimestamp(LocalDateTime.now());
+            return doubtRequestRepository.save(doubtRequest);
+        } else {
+            throw new UserException("Doubt is already resolved");
+        }
+    }
+
+
+    @Override
+    public DoubtRequest deleteDoubtRequestById(Integer doubtRequestId) {
+        DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId).orElseThrow(() -> new UserException("DoubtRequest not found"));
+        if (doubtRequest.getTutor()!=null){
+            TutorAvailability tutorAvailability = tutorAvailabilityRepository.findByTutor(doubtRequest.getTutor()).orElseThrow(() -> new UserException("Tutor not found"));
+            tutorAvailability.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+            tutorAvailabilityRepository.save(tutorAvailability);
+        }
+        doubtRequestRepository.delete(doubtRequest);
+        return doubtRequest;
+    }
+
+    @Override
+    public List<DoubtRequest> getAllDoubtRequest(String email) {
+        return doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
+    }
+
+    @Override
+    public List<DoubtRequest> getAllResolvedDoubtRequest(String email) {
+        List<DoubtRequest> doubtRequests = doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
+        return doubtRequests.stream().filter(doubtRequest -> doubtRequest.getDoubtResolved() == DoubtResolved.RESOLVED).toList();
+    }
+
+    @Override
+    public List<DoubtRequest> getAllPendingDoubtRequest(String email) {
+        List<DoubtRequest> doubtRequests = doubtRequestRepository.findByStudent(userRepository.findByEmail(email).orElseThrow(() -> new UserException("User not found")));
+        return doubtRequests.stream().filter(doubtRequest -> doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED).toList();
+    }
 
 
 }

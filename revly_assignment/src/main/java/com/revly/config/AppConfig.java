@@ -56,8 +56,10 @@ public class AppConfig {
                             .requestMatchers("/users/doubtRequest/**").hasRole("STUDENT")
                             .requestMatchers("/users/doubtRequest/tutor/**").hasRole("TUTOR")
                             .requestMatchers("/users/**").hasRole("TUTOR")
+                            .requestMatchers(HttpMethod.POST,"/users/doubtRequest/tutor/**").hasRole("TUTOR")
                             .requestMatchers("/users/tutorAvailability/**").hasRole("TUTOR")
                             .requestMatchers("/users/tutorAvailability/availableTutors").hasRole("STUDENT")
+                            .requestMatchers("/users/tutorAvailability/getAllTutorAvailabilityByStudent").hasRole("STUDENT")
                             .requestMatchers("/users/tutorAvailability/addTutorAvailability/**").hasRole("TUTOR")
                             .anyRequest().authenticated();
                 })

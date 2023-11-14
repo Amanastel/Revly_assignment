@@ -23,13 +23,28 @@ public class DoubtRequestTutorController {
         this.doubtRequestTutor = doubtRequestTutor;
     }
 
-    @PostMapping("/{doubtRequestId}/solve/{tutorId}")
+    @GetMapping("/{doubtRequestId}/solve")
     public ResponseEntity<DoubtRequest> solveDoubtRequestHandler(@PathVariable Integer doubtRequestId, Authentication auth, @RequestParam("solutionDescription") String solutionDescription) {
         return ResponseEntity.ok(doubtRequestTutor.solveDoubt(doubtRequestId, solutionDescription, auth.getName()));
+    }
+
+    @GetMapping("/{doubtRequestId}/accept")
+    public ResponseEntity<DoubtRequest> acceptDoubtRequestHandler(@PathVariable Integer doubtRequestId, Authentication auth) {
+        return ResponseEntity.ok(doubtRequestTutor.acceptDoubtRequest(doubtRequestId, auth.getName()));
     }
 
     @GetMapping("/pending")
     public ResponseEntity<List<DoubtRequest>> allPendingDoubtRequestHandler(Authentication auth) {
         return ResponseEntity.ok(doubtRequestTutor.allPendingDoubtRequest(auth.getName()));
+    }
+
+    @GetMapping("/doubtRequestBasedOnSubject")
+    public ResponseEntity<List<DoubtRequest>> checkDoubtRequestBasedOnExpertiseHandler(Authentication auth) {
+        return ResponseEntity.ok(doubtRequestTutor.checkDoubtRequestBasedOnExpertise(auth.getName()));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<DoubtRequest>> getAllDoubtRequestHandler(Authentication auth) {
+        return ResponseEntity.ok(doubtRequestTutor.getAllDoubtRequest(auth.getName()));
     }
 }

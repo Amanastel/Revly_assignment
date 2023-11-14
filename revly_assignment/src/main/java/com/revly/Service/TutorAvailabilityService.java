@@ -9,4 +9,5 @@ public interface TutorAvailabilityService {
     public List<TutorAvailability> availableTutors();
     public List<TutorAvailability> unavailableTutors();
     public int countOnlineTutors();
+    public List<TutorAvailability> getAllTutorAvailabilityByStudentEmail(String email);
 }

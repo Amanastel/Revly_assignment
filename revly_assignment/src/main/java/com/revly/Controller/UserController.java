@@ -35,7 +35,7 @@ public class UserController {
 
     for testing purpose only
     Student registration
-    POST http://localhost:8080/user/register
+    POST http://localhost:8080/users/register
 
             {
           "userType": "STUDENT",
@@ -101,13 +101,13 @@ public class UserController {
     }
 
     @GetMapping("/signIn")
-    public ResponseEntity<String > getLoggedInCustomerDetailsHandler(Authentication auth) {
+    public ResponseEntity<Users > getLoggedInCustomerDetailsHandler(Authentication auth) {
         Users users = userService.getUserByEmail(auth.getName());
         log.info("User: {}", auth.getName());
         if(users.getUserType().equalsIgnoreCase("ROLE_TUTOR")){
             tutorAvailabilityService.addTutorAvailability(users.getEmail());
         }
-        return new ResponseEntity<>("User: "+auth.getName(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(users, HttpStatus.ACCEPTED);
     }
 
 }

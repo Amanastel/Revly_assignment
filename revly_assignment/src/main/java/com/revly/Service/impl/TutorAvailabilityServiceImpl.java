@@ -135,15 +135,32 @@ public class TutorAvailabilityServiceImpl implements TutorAvailabilityService  {
             System.out.println("Number of online tutors: " + onlineTutorCount);
             return onlineTutorCount;
         }else{
-            throw new UserException("No tutors available");
+            return 0;
         }
 
 
 
     }
 
+    @Override
+    public List<TutorAvailability> getAllTutorAvailabilityByStudentEmail(String email) {
+        Users student = userRepository.findByEmail(email)
+                .filter(user -> Objects.equals(user.getUserType().toUpperCase(), "ROLE_STUDENT"))
+                .orElseThrow(() -> new UserException("Student not found"));
 
+        List<TutorAvailability> tutorAvailabilityList = tutorAvailabilityRepository.findByAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+        if (tutorAvailabilityList.isEmpty()) {
+            throw new UserException("No tutors available");
+        }
+        List<TutorAvailability> tutorAvailabilityList1 =tutorAvailabilityList.stream()
+                .filter(tutorAvailability -> tutorAvailability.getTutor().getSubjectExpertise().equals(student.getUserLanguage()))
+                .toList();
+        if (tutorAvailabilityList1.isEmpty()) {
+            throw new UserException("No tutors available for this subject");
+        }
+        return tutorAvailabilityList1;
 
+    }
 
 
 }

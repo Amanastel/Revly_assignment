@@ -1,10 +1,7 @@
 package com.revly.Service.impl;
 
 import com.revly.Exception.UserException;
-import com.revly.Model.DoubtRequest;
-import com.revly.Model.DoubtResolved;
-import com.revly.Model.Users;
-import com.revly.Model.UserType;
+import com.revly.Model.*;
 import com.revly.Repository.DoubtRequestRepository;
 import com.revly.Repository.TutorAvailabilityRepository;
 import com.revly.Repository.UserRepository;
@@ -53,6 +50,37 @@ public class DoubtRequestServiceTutorImpl implements DoubtRequestServiceTutor {
         if (doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED) {
             doubtRequest.setDoubtResolved(DoubtResolved.RESOLVED);
             doubtRequest.setDoubtDescription(doubtRequest.getDoubtDescription() + "\nTutor solution: " + solutionDescription);
+            tutorAvailabilityRepository.findByTutor(tutor).ifPresent(tutorAvailability -> {
+                tutorAvailability.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+                tutorAvailability.setLastPingTime(LocalDateTime.now());
+                tutorAvailabilityRepository.save(tutorAvailability);
+            });
+            doubtRequest.setTutor(tutor);
+            doubtRequest.setTimestamp(LocalDateTime.now());
+
+            // Save the updated DoubtRequest
+            return doubtRequestRepository.save(doubtRequest);
+        } else {
+            throw new UserException("Doubt is already resolved");
+        }
+    }
+
+    @Override
+    public DoubtRequest acceptDoubtRequest(Integer doubtRequestId, String email) {
+        DoubtRequest doubtRequest = doubtRequestRepository.findById(doubtRequestId)
+                .orElseThrow(() -> new UserException("DoubtRequest not found"));
+
+        Users tutor = userRepository.findByEmail(email)
+                .filter(user -> Objects.equals(user.getUserType(), "ROLE_TUTOR"))
+                .orElseThrow(() -> new UserException("Tutor not found"));
+
+        // Additional check: Ensure the tutor's expertise matches the doubt subject
+        if (!doubtRequest.getDoubtSubject().equals(tutor.getSubjectExpertise())) {
+            throw new UserException("Tutor expertise does not match the doubt subject");
+        }
+
+        if (doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED) {
+            doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
             doubtRequest.setTutor(tutor);
             doubtRequest.setTimestamp(LocalDateTime.now());
 
@@ -72,6 +100,42 @@ public class DoubtRequestServiceTutorImpl implements DoubtRequestServiceTutor {
 
         List<DoubtRequest> doubtRequests = doubtRequestRepository.findByTutor(tutor).stream()
                 .filter(doubtRequest -> doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED)
+                .toList();
+        if (doubtRequests.isEmpty()) {
+            throw new UserException("No pending doubt requests for this tutor");
+        } else {
+            return doubtRequests;
+        }
+    }
+
+    @Override
+    public List<DoubtRequest> checkDoubtRequestBasedOnExpertise(String email) {
+        Users tutor = userRepository.findByEmail(email)
+                .filter(user -> Objects.equals(user.getUserType(), "ROLE_TUTOR"))
+                .orElseThrow(() -> new UserException("Tutor not found"));
+
+        List<DoubtRequest> doubtRequests = doubtRequestRepository.findByDoubtSubject(tutor.getSubjectExpertise()).stream()
+                .filter(doubtRequest -> doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED)
+                .filter(doubtRequest -> {
+                    Users tutorFromDoubt = doubtRequest.getTutor();
+                    // Both tutors are null
+                    return tutorFromDoubt == null || tutorFromDoubt.getName().equals(tutor.getName()); // Check if tutor names match
+                })
+                .toList();
+        if (doubtRequests.isEmpty()) {
+            throw new UserException("No pending doubt requests for this tutor");
+        } else {
+            return doubtRequests;
+        }
+    }
+
+    @Override
+    public List<DoubtRequest> getAllDoubtRequest(String email) {
+        Users tutor = userRepository.findByEmail(email)
+                .filter(user -> Objects.equals(user.getUserType(), "ROLE_TUTOR"))
+                .orElseThrow(() -> new UserException("Tutor not found"));
+
+        List<DoubtRequest> doubtRequests = doubtRequestRepository.findByTutor(tutor).stream()
                 .toList();
         if (doubtRequests.isEmpty()) {
             throw new UserException("No pending doubt requests for this tutor");
