@@ -35,7 +35,7 @@ Ensure you have the following prerequisites installed:
    git clone https://github.com/Amanastel/Revly_assignment
 
 ## Usage
-
+- Visit the API documentation at `http://localhost:8888/swagger-ui/` to explore available endpoints.
 To use the Doubt Resolution System:
 
 1. Create an account as a student or tutor.
