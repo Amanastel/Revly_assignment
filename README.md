@@ -34,6 +34,13 @@ Ensure you have the following prerequisites installed:
    ```bash
    git clone https://github.com/Amanastel/Revly_assignment
 
+### Netlify Link(Frontend):-
+```bash
+https://guileless-platypus-4d94fd.netlify.app/
+```
+
+
+
 ## Usage
 - Visit the API documentation at `http://localhost:8888/swagger-ui/` to explore available endpoints.
 To use the Doubt Resolution System:
@@ -59,6 +66,7 @@ The project is organized into the following key directories:
 - Java Persistence API (JPA)
 - MySQL Database
 - Spring Security
+- HTML CSS Javascript
 
 
 ## Important Endpoints
