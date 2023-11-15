@@ -98,6 +98,11 @@ public class DoubtRequestServiceTutorImpl implements DoubtRequestServiceTutor {
 
         if (doubtRequest.getDoubtResolved() == DoubtResolved.UNRESOLVED) {
             doubtRequest.setDoubtResolved(DoubtResolved.UNRESOLVED);
+            tutorAvailabilityRepository.findByTutor(tutor).ifPresent(tutorAvailability -> {
+                tutorAvailability.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
+                tutorAvailability.setLastPingTime(LocalDateTime.now());
+                tutorAvailabilityRepository.save(tutorAvailability);
+            });
             doubtRequest.setTutor(tutor);
             doubtRequest.setTimestamp(LocalDateTime.now());
 
