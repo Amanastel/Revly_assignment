@@ -145,4 +145,11 @@ public class UserServiceImpl implements UserService {
             throw new UserException("No students found");
         }
     }
+
+    @Override
+    public Users deleteUser(Integer id) {
+        Users user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+        userRepository.delete(user);
+        return user;
+    }
 }

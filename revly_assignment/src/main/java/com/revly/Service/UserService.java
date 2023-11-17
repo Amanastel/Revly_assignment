@@ -12,4 +12,6 @@ public interface UserService {
     public List<Users> getAllUsers();
     public List<Users> getAllTutors();
     public List<Users> getAllStudents();
+
+    public Users deleteUser(Integer id);
 }

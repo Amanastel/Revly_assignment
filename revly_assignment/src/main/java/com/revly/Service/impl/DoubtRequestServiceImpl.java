@@ -95,7 +95,7 @@ public class DoubtRequestServiceImpl implements DoubtRequestService {
                     .findFirst()
                     .orElseThrow(() -> new UserException("No matching tutor available"));
 
-            selectedTutor.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+            selectedTutor.setAvailabilityStatus(AvailabilityStatus.UNAVAILABLE);
             tutorAvailabilityRepository.save(selectedTutor);
 
             doubtRequest.setDoubtDescription("Student doubt description: " + doubtRequest.getDoubtDescription());

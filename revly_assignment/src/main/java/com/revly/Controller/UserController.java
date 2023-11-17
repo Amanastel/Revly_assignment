@@ -152,4 +152,10 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.ACCEPTED);
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Users> deleteUserHandler(@PathVariable Integer id){
+        return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.ACCEPTED);
+    }
+
+
 }
